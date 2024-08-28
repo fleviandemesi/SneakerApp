@@ -63,4 +63,15 @@ dependencies {
     //For Swipe Refresh in Recycler View
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.squareup.picasso:picasso:2.71828")
+    annotationProcessor ("com.github.bumptech.glide:compiler:<version>")
+
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+
+    implementation ("com.github.bumptech.glide:glide:4.14.2") // Use the latest stable version
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+
 }

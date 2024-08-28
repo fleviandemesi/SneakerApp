@@ -5,81 +5,85 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:id="@+id/main"
-    android:background="#FA6039"
-    android:layout_margin="8dp"
-    android:layout_marginTop="10dp"
+    android:background="@drawable/login_background"
     android:layout_height="match_parent"
     tools:context=".SingleShoeActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/linear1"
             android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="16dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/shoe5" />
+            android:orientation="vertical">
+
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Adiddas"
-
-                android:id="@+id/name"
+                android:text="Air Max"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginBottom="5dp"/>
+                android:textColor="@color/white"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="8dp"/>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="15dp"
-            android:layout_below="@id/linear1"
+            android:layout_below="@+id/linear1"
             android:id="@+id/linear2">
 
-            <com.google.android.material.textview.MaterialTextView
+            <ImageView
+                android:id="@+id/shoeimage"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Its just a placeholder"
+                android:layout_height="200dp"
+                android:layout_margin="8dp"
+                android:layout_below="@id/name"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/shoe5"/>
 
-                android:textStyle="normal"
-                android:id="@+id/brand"
-                android:textSize="13dp"
-                android:layout_marginBottom="5dp"/>
+
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/linear2"
+            android:layout_marginTop="10dp"
             android:id="@+id/linear3"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal"
-            android:layout_below="@id/linear2">
-
-
+            android:orientation="vertical"
+            android:paddingLeft="5dp">
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/brand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1500KES"
-                android:layout_marginStart="5dp"
-
-                android:id="@+id/price"
+                android:text="NIKE"
                 android:textStyle="bold"
-                android:textSize="15dp"/>
+                android:textSize="14sp"
 
+                android:textColor="#F3FFFFFF"
+                android:layout_marginTop="4dp"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price: KES 3,500"
+                android:textStyle="bold"
+                android:textSize="14sp"
+
+                android:textColor="#FAED092B"
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
 
         <LinearLayout

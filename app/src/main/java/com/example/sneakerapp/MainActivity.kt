@@ -22,6 +22,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,32 +33,51 @@ import com.example.sneakerapp.helpers.SQLiteCartHelper
 import com.example.sneakerapp.helpers.prefsHelper
 import com.example.sneakerapp.models.Shoe
 import com.google.android.material.button.MaterialButton
+import de.hdodenhof.circleimageview.CircleImageView
 import org.json.JSONArray
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity() {
-    //Global Declaration - they can be accessed all over this class
-    lateinit var itemList: List<Shoe>
-    lateinit var labAdapter: ShoeAdapter
-//    lateinit var recyclerView: RecyclerView
-    lateinit var progress: ProgressBar
-    lateinit var swiperefresh: SwipeRefreshLayout
 
-    fun update(){
-        //Find Views By ID
+class MainActivity : AppCompatActivity() {
+    lateinit var recyclerview: RecyclerView
+    lateinit var adapter: ShoeAdapter
+    lateinit var progress: ProgressBar
+    lateinit var itemList: List<Shoe>
+     lateinit var swiperrefresh: SwipeRefreshLayout
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+// Find the MaterialTextView by its ID
+        val myCartTextView = findViewById<ImageView>(R.id.mycart)
+        val badge = findViewById<TextView>(R.id.badge)
+
+        val helper = SQLiteCartHelper(applicationContext)
+        badge?.text = "" + helper.getNumberOfItems()
+
+        // Set an OnClickListener to the MaterialTextView
+        myCartTextView.setOnClickListener {
+            // Create an intent to start CartActivity
+            val intent = Intent(this, MyCart::class.java)
+            startActivity(intent)
+        }
         val user = findViewById<MaterialTextView>(R.id.user)
         val signin = findViewById<MaterialButton>(R.id.signin)
-        val signout = findViewById<MaterialButton>(R.id.signout)
-        val profile = findViewById<MaterialButton>(R.id.profile)
+        val profile = findViewById<CircleImageView>(R.id.profile)
+
+        profile.visibility = View.VISIBLE
+        profile.setOnClickListener {
+            //Link to Member Profile TODO Later
+            startActivity(Intent(applicationContext, MemberProfileActivity::class.java))
+        }//end
 
         //Set below 3 Views to GONE/Disappear
         signin.visibility = View.GONE
-        signout.visibility = View.GONE
-        profile.visibility = View.GONE
+//        signout.visibility = View.GONE
+//        profile.visibility = View.GONE
 
         //Access user access token from Prefs
         val token = prefsHelper.getPrefs(applicationContext, "access_token")
-        if (token.isEmpty()){
+        if (token.isEmpty()) {
             //If user Token does  not exist, Update user TextView with Not Logged In
             user.text = "Not Logged In"
             //Make sign in button visible
@@ -66,177 +86,114 @@ class MainActivity : AppCompatActivity() {
                 //Link to Sign in Activity
                 startActivity(Intent(applicationContext, SignInActivity::class.java))
             }
-        }
-        else{
-            //If user Token  exist,
-            //Make Profile Button visible
+        } else {
+//            If user Token  exist,
+//            Make Profile Button visible
             profile.visibility = View.VISIBLE
             profile.setOnClickListener {
                 //Link to Member Profile TODO Later
-                startActivity(Intent(applicationContext, SignUpActivity::class.java))
+                startActivity(Intent(applicationContext, MemberProfileActivity::class.java))
             }//end
+
 
             //Access username from Prefs
             val surname = prefsHelper.getPrefs(applicationContext, "surname")
             //Update user textView with Logged in User
             user.text = "Welcome $surname"
-            //Make signout button visble
-            signout.visibility = View.VISIBLE
-            //Link to PrefHelper and Clear Prefs
-            signout.setOnClickListener{
-                prefsHelper.clearPrefs(applicationContext)
-                startActivity(intent)
-                finishAffinity()
-            }
         }
-    }//end
 
-    fun requestLocation(){
-        if(ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION),
-                123)
-        }//end if
-        else {
+        // Initialize views
+        recyclerview = findViewById(R.id.recyclerview)
+        progress = findViewById(R.id.progress)
+        swiperrefresh = findViewById(R.id.swiperefresh)
 
+        // Set up the GridLayoutManager with 2 columns
+        val layoutManager = GridLayoutManager(this, 2)
+        recyclerview.layoutManager = layoutManager
+        recyclerview.setHasFixedSize(true)
+
+        // Initialize the adapter
+        adapter = ShoeAdapter(this)
+        recyclerview.adapter = adapter
+
+        // Set the shoe data
+        getShoe()
+
+        // Set up button click listeners
+        findViewById<MaterialButton>(R.id.button_show_all).setOnClickListener {
+            adapter.filterByCategory(-1) // -1 indicates showing all shoes
         }
-    }//end function
 
+        findViewById<MaterialButton>(R.id.button_category_sneakers).setOnClickListener {
+            adapter.filterByCategory(1) // Replace 1 with the actual category ID for Sneakers
+        }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        requestLocation()
-        update()
+        findViewById<MaterialButton>(R.id.button_category_boots).setOnClickListener {
+            adapter.filterByCategory(2) // Replace 2 with the actual category ID for Boots
+        }
 
-        progress = findViewById(R.id.progressbar)
-//        recyclerView = findViewById(R.id.recycler)
-        labAdapter = ShoeAdapter(applicationContext)
-//        recyclerView.layoutManager = LinearLayoutManager(applicationContext)
-//        recyclerView.setHasFixedSize(true)
-        //Call the function
-        fetchData()
-        swiperefresh = findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
-        swiperefresh.setOnRefreshListener {
-            fetchData()// fetch data again
-        }//end refresh
-
-        //Filter labs
-        val etsearch = findViewById<EditText>(R.id.search)
-        etsearch.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(texttyped: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                filter(texttyped.toString())
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-        })
-    }//end Oncreate
-
-    fun fetchData(){
-        //Go to the PAi get the dataapplicationContextthis
-        val api = constants.BASE_URL+"/laboratories"
-        val helper = ApiHelper(this@MainActivity)
-        helper.get(api, object: ApiHelper.CallBack{
+        // Set up SwipeRefreshLayout to refresh data
+        swiperrefresh.setOnRefreshListener {
+            getShoe() // Re-fetch data
+        }
+    }
+    private fun getShoe() {
+        val api = constants.BASE_URL + "/shoes"
+        val helper = ApiHelper(applicationContext)
+        helper.get(api, object : ApiHelper.CallBack {
             override fun onSuccess(result: JSONArray?) {
-                //Take above result to adapter
-                //Convert Above result from JSON array to LIST<Lab>
-                val gson = GsonBuilder().create()
-                itemList = gson.fromJson(result.toString(),
-                    Array<Shoe>::class.java).toList()
-                //Finally, our adapter has the data
-                labAdapter.setListItems(itemList)
-                //For the sake of recycling/Looping items, add the adapter to recycler
-//                recyclerView.adapter = labAdapter
+                val shoegson = GsonBuilder().create()
+                itemList = shoegson.fromJson(result.toString(), Array<Shoe>::class.java).toList()
+                adapter.setListItems(itemList)
                 progress.visibility = View.GONE
-                swiperefresh.isRefreshing = false
+                swiperrefresh.isRefreshing = false
 
-            }//end
+                // Set up search functionality
+                val shoesearch = findViewById<EditText>(R.id.search)
+                shoesearch.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        filter(s.toString())
+                    }
+                    override fun afterTextChanged(s: Editable?) {}
+                })
+            }
 
             override fun onSuccess(result: JSONObject?) {
-
+                // Handle JSON object success response if needed
+                progress.visibility = View.GONE
+                swiperrefresh.isRefreshing = false
             }
 
             override fun onFailure(result: String?) {
-                Toast.makeText(applicationContext, "Error:"+result.toString(),
-                    Toast.LENGTH_SHORT).show()
-                Log.d("failureerrors", result.toString())
                 progress.visibility = View.GONE
+                swiperrefresh.isRefreshing = false
+                Log.d("failureerrors", result.toString())
             }
-
         })
-    }//end fetch data
+    }
+            // private function
+            private fun filter(text: String) {
+// create a new arraylist to filter our data
+                val filteredlist: ArrayList<Shoe> = ArrayList()
 
-    //Filter function
-    //justpaste.it/9j21s
-    //Filter
-    private fun filter(text: String) {
-        // creating a new array list to filter our data.
-        val filteredlist: ArrayList<Shoe> = ArrayList()
+// run a for loop to compare elements
+                for (item in itemList) {
+// check if entered string matched with any item of our recycler view
+                    if (item.name.lowercase().contains(text.lowercase())) {
+// if the item is matched we are
+// adding it to our filtered list
+                        filteredlist.add(item)
+                    } //end of if statement
 
-        // running a for loop to compare elements.
-        for (item in itemList) {
-            // checking if the entered string matched with any item of our recycler view.
-            if (item.name.lowercase().contains(text.lowercase())) {
-                // if the item is matched we are
-                // adding it to our filtered list.
-                filteredlist.add(item)
+                } //end of for loop
+                if (filteredlist.isEmpty()) {
+// if no item is added in filtered list
+
+                    adapter.filterList(filteredlist)
+
+                }
             }
         }
-        if (filteredlist.isEmpty()) {
-            // if no item is added in filtered list we are
-            // displaying a toast message as no data found.
-            //Toast.makeText(this, "No Data Found..", Toast.LENGTH_SHORT).show()
-            labAdapter.filterList(filteredlist)
-        } else {
-            // at last we are passing that filtered
-            // list to our adapter class.
-            labAdapter.filterList(filteredlist)
-        }
-    }
 
 
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        menuInflater.inflate(R.menu.main, menu)
-//        return super.onCreateOptionsMenu(menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == R.id.mycart){
-//            startActivity(Intent(applicationContext, MyCart::class.java))
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
-
-
-    //Start
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu) // Access main.xml
-        val item: MenuItem = menu!!.findItem(R.id.mycart) //find my cart item
-        item.setActionView(R.layout.design) //load the design
-        val actionView: View? = item.actionView
-        //Access the views in design XML
-        val number = actionView?.findViewById<TextView>(R.id.badge)
-        val image = actionView?.findViewById<ImageView>(R.id.image)
-        //If image is clicked, Link to MyCart
-        image?.setOnClickListener {
-            startActivity(Intent(applicationContext, MyCart::class.java))
-        }
-        //load the number of items in Cart icon
-        val helper = SQLiteCartHelper(applicationContext)
-        number?.text = ""+helper.getNumberOfItems()
-        return super.onCreateOptionsMenu(menu) //show options menu
-    }
-    //End
-}

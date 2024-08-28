@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +12,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.sneakerapp.adapters.ShoeAdapter
 import com.example.sneakerapp.adapters.SingleShoeCartAdapter
 import com.example.sneakerapp.helpers.SQLiteCartHelper
 import com.example.sneakerapp.helpers.prefsHelper
@@ -21,86 +19,88 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 
 class MyCart : AppCompatActivity() {
+
+    private lateinit var helper: SQLiteCartHelper
+    private lateinit var checkoutButton: MaterialButton
+    private lateinit var totalTextView: MaterialTextView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: SingleShoeCartAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_my_cart)
+        setupWindowInsets()
+
+        helper = SQLiteCartHelper(applicationContext)
+        checkoutButton = findViewById(R.id.checkout)
+        totalTextView = findViewById(R.id.total)
+        recyclerView = findViewById(R.id.recycler)
+
+        setupRecyclerView()
+        updateTotalCost()
+        setupCheckoutButton()
+    }
+
+    private fun setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
 
-        //put total cost in a textview
-        val helper = SQLiteCartHelper(applicationContext)
-        val checkout = findViewById<MaterialButton>(R.id.checkout)
-        if (helper.totalCost() == 0.0){
-            checkout.visibility = View.GONE
-        }//end
-        checkout.setOnClickListener {
-            //Using Prefs check if token exists
-            val token = prefsHelper.getPrefs(applicationContext, "access_token")
-            if (token.isEmpty()){
-                //Token does not exist, meaning Not Logged In
-                Toast.makeText(applicationContext, "Not Logged In",
-                    Toast.LENGTH_SHORT).show()
-                startActivity(Intent(applicationContext, SignInActivity::class.java))
-                finish()
-            }
-            else {
-                //Token Exists, meaning Logged In we Go to Next step
-                startActivity(Intent(applicationContext, MainActivity::class.java))
-                Toast.makeText(applicationContext, "Logged In", Toast.LENGTH_SHORT).show()
-            }
-        }//end
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(applicationContext)
+        recyclerView.setHasFixedSize(true)
+        adapter = SingleShoeCartAdapter(applicationContext)
 
-
-        val total = findViewById<MaterialTextView>(R.id.total)
-
-        total.text = "Total: "+helper.totalCost()
-
-        //Find recycler
-        val recycler = findViewById<RecyclerView>(R.id.recycler)
-        recycler.layoutManager = LinearLayoutManager(applicationContext)
-        recycler.setHasFixedSize(true)
-        //Access adapter and provide it with from getAllItems
-        if(helper.getNumberOfItems() == 0){
-            Toast.makeText(applicationContext, "Your Cart is Empty",
-                Toast.LENGTH_LONG).show()
-        }
-        else {
-            val adapter = SingleShoeCartAdapter(applicationContext)
-            adapter.setListItems(helper.getAllItems())//pass data
-            recycler.adapter = adapter //link adapter to recycler
+        val items = helper.getAllItems()
+        if (items.isEmpty()) {
+            Toast.makeText(applicationContext, "Your Cart is Empty", Toast.LENGTH_LONG).show()
+            checkoutButton.visibility = View.GONE
+        } else {
+            adapter.setListItems(items)
+            recyclerView.adapter = adapter
         }
     }
 
-    //Activate Options menu
+    private fun updateTotalCost() {
+        val totalCost = helper.totalCost()
+        totalTextView.text = "Total Cost: $totalCost"
+        checkoutButton.visibility = if (totalCost > 0) View.VISIBLE else View.GONE
+    }
+
+    private fun setupCheckoutButton() {
+        checkoutButton.setOnClickListener {
+            val token = prefsHelper.getPrefs(applicationContext, "access_token")
+            if (token.isEmpty()) {
+                Toast.makeText(applicationContext, "Not Logged In", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(applicationContext, SignInActivity::class.java))
+                finish()
+            } else {
+                startActivity(Intent(applicationContext, CheckOutActivity::class.java))
+                Toast.makeText(applicationContext, "Logged In", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        //Below code Loads the cart XML
         menuInflater.inflate(R.menu.cart, menu)
-        return super.onCreateOptionsMenu(menu) //Creates an Options Menu
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        //Below code makes id clear cart clickablea and clears the cart using helper.clearCart()
-        if (item.itemId == R.id.clearcart){
-            val helper = SQLiteCartHelper(applicationContext)
-            helper.clearCart()
+        return when (item.itemId) {
+            R.id.clearcart -> {
+                helper.clearCart()
+                true
+            }
+            R.id.backtoLabs -> {
+                startActivity(Intent(applicationContext, MainActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        //backtoLabs takes us back to MainActivity
-        if (item.itemId == R.id.backtoLabs){
-            startActivity(Intent(applicationContext, MainActivity::class.java))
-        }
-
-        return super.onOptionsItemSelected(item)
     }
-
-//    override fun onBackPressed() {
-//        val i = Intent(applicationContext, MainActivity::class.java)
-//        startActivity(i)
-//        finishAffinity()
-    }
-
-
-
+}

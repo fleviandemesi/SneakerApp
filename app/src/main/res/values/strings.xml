@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SneakerApp</string>
+    <string name="profile_picture_desc">Profile Picture</string>
+    <string name="profile_username_placeholder">John Doe</string>
+    <string name="profile_email_placeholder">john.doe@example.com</string>
+    <string name="profile_phone_placeholder">This is a short bio about John Doe. He is a software developer with a passion for creating mobile apps.</string>
 </resources>

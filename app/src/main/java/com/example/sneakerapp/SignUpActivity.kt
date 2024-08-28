@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.CallLog
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
@@ -42,14 +43,14 @@ class SignUpActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val btncreate = findViewById<MaterialButton>(R.id.create)
+        val btncreate = findViewById<Button>(R.id.create)
         btncreate.setOnClickListener {
-            val surname = findViewById<TextInputEditText>(R.id.surname)
-            val others = findViewById<TextInputEditText>(R.id.others)
-            val email = findViewById<TextInputEditText>(R.id.email)
-            val phone = findViewById<TextInputEditText>(R.id.phone)
-            val password = findViewById<TextInputEditText>(R.id.password)
-            val confirm = findViewById<TextInputEditText>(R.id.confirm)
+            val surname = findViewById<EditText>(R.id.surname)
+            val others = findViewById<EditText>(R.id.others)
+            val email = findViewById<EditText>(R.id.email)
+            val phone = findViewById<EditText>(R.id.phone)
+            val password = findViewById<EditText>(R.id.password)
+            val confirm = findViewById<EditText>(R.id.confirm)
 //            val loacation = findViewById<>()
 
 

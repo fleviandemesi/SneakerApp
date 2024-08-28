@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sneakerapp.R
@@ -11,6 +12,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import com.example.sneakerapp.helpers.SQLiteCartHelper
 import com.example.sneakerapp.models.Shoe
+import com.squareup.picasso.Picasso
 
 class SingleShoeCartAdapter (var context: Context):
     RecyclerView.Adapter<SingleShoeCartAdapter.ViewHolder>() {
@@ -33,17 +35,31 @@ class SingleShoeCartAdapter (var context: Context):
         //Find your 3 text views
         val name = holder.itemView.findViewById<MaterialTextView>(R.id.name)
         val brandname = holder.itemView.findViewById<MaterialTextView>(R.id.brand)
+        val photo = holder.itemView.findViewById<ImageView>(R.id.shoeimage)
         val shoeprice = holder.itemView.findViewById<MaterialTextView>(R.id.price)
         //Assume one Lab
-        val item = itemList[position]
-        name.text = item.name
-        shoeprice.text = item.price+" KES"
-        brandname.text = item.brand
+        val shoe = itemList[position]
+        name.text = shoe.name
+        shoeprice.text = shoe.price+" KES"
+        brandname.text = shoe.brand
+
+        // Load the image using Picasso
+        val imageUrl = shoe.photo
+        if (imageUrl.isNullOrEmpty()) {
+            // Handle empty or null image URL
+            photo.setImageResource(R.drawable.error_image) // Set a default image
+        } else {
+            Picasso.get()
+                .load(imageUrl)
+                .placeholder(R.drawable.shoe5) // Placeholder image
+                .error(R.drawable.error_image) // Error image
+                .into(photo)
+        }
 
         //Find remove button and set Listener
         val remove = holder.itemView.findViewById<MaterialButton>(R.id.remove)
         remove.setOnClickListener {
-            val shoe_id = item.shoe_id
+            val shoe_id = shoe.shoe_id
             val helper = SQLiteCartHelper(context)
             helper.clearCartById(shoe_id)
             Toast.makeText(context, "remove", Toast.LENGTH_SHORT).show()

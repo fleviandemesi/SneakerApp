@@ -4,112 +4,148 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:id="@+id/main"
-    android:background="#FA6039"
+    android:background="@drawable/login_background"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="end"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp">
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="match_parent"
+            android:id="@+id/mycart"
+            android:src="@drawable/baseline_add_shopping_cart_24" />
+        <TextView
+            android:layout_width="18dp"
+            android:layout_height="20dp"
+            android:background="@drawable/shape1"
+            android:layout_marginTop="-4dp"
+            android:layout_marginStart="-4dp"
+            android:textStyle="bold"
+            android:id="@+id/badge"
+            android:paddingRight="2dp"
+            android:text="3"
+            android:layout_gravity="top|end"/>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="start"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:id="@+id/profile"
+            android:src="@drawable/icon_account_circle_24"
+            android:layout_marginLeft="5dp"/>
+
+<!--        <ImageView-->
+<!--            android:layout_width="30dp"-->
+<!--            android:id="@+id/profile"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/person_24" />-->
+
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Welcome"
+        android:textColor="@color/white"
         android:padding="5dp"
         android:textStyle="bold"
         android:id="@+id/user"/>
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:textSize="11sp"
-        android:text="Sign In"
-        android:layout_marginStart="5dp"
-        android:id="@+id/signin"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:textSize="11sp"
-        android:text="Sign Out"
-        android:layout_marginStart="5dp"
-        android:id="@+id/signout"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:textSize="11sp"
-        android:text="Profile"
-        android:layout_marginStart="5dp"
-        android:id="@+id/profile"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/signin"
+        android:text="SignIn"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Search Shoes..."
+        android:textSize="20sp"
+        android:textColor="@color/white"
         android:layout_marginEnd="5dp"
         android:id="@+id/search"/>
-    <!-- HorizontalScrollView for horizontal scrolling-->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:scrollbars="none">
 
-        <!-- LinearLayout with horizontal orientation to hold CardView items -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-            <!-- CardView items -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_margin="8dp"
-                app:cardElevation="4dp">
+            <!-- Category Buttons -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_show_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All"
+                android:textColor="@color/white"
+                android:backgroundTint="#FD01030B"
+                android:layout_marginEnd="8dp" />
 
-                <!-- Content of CardView -->
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/shoe5" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_category_sneakers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sneakers"
+                android:textColor="@color/white"
+                android:backgroundTint="#FD01030B"
+                android:layout_marginEnd="8dp"/>
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/shoe3" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_category_boots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Boots"
+                android:textColor="@color/white"
+                android:backgroundTint="#FD01030B"
+                android:layout_marginEnd="8dp"/>
 
-            </androidx.cardview.widget.CardView>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_category_sandals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sandals"
+                android:textColor="@color/white"
+                android:backgroundTint="#FD01030B"
+                android:layout_marginEnd="8dp"/>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_margin="8dp"
-                app:cardElevation="4dp">
-
-                <!-- Content of CardView -->
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/shoe4" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_margin="8dp"
-                app:cardElevation="4dp">
-
-                <!-- Content of CardView -->
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/shoe3" />
-            </androidx.cardview.widget.CardView>
-            <!-- Add more CardViews as needed -->
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_category_formal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Formal"
+                android:textColor="@color/white"
+                android:backgroundTint="#FD01030B"
+                android:layout_marginEnd="8dp"/>
         </LinearLayout>
     </HorizontalScrollView>
     <ScrollView
@@ -122,23 +158,27 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <ProgressBar
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
                 android:layout_height="wrap_content"
-                android:id="@+id/progressbar"
+                android:id="@+id/progress"
                 android:layout_margin="3dp"/>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/swipeRefreshLayout"/>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/swiperefresh">
 
 
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
             <!-- RecyclerView for the list of items -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
+                android:id="@+id/recyclerview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/singleshoe"/>
+                tools:listitem="@layout/singl"
+                android:layout_height="wrap_content"/>
+
 
 
         </LinearLayout>

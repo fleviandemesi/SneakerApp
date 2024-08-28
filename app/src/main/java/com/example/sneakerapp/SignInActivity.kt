@@ -3,6 +3,7 @@ package com.example.sneakerapp
 import ApiHelper
 import android.content.Intent
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -34,17 +35,17 @@ class SignInActivity : AppCompatActivity() {
         }
 
         //fetch to edit text
-        val email = findViewById<TextInputEditText>(R.id.email)
-        val password = findViewById<TextInputEditText>(R.id.password)
+        val email = findViewById<EditText>(R.id.phone)
+        val password = findViewById<EditText>(R.id.password)
         val login = findViewById<MaterialButton>(R.id.login)
         login.setOnClickListener{
             //specify your member signin endpoint
-            val api = constants.BASE_URL +"/usersigin"
+            val api = constants.BASE_URL +"/usersignin"
             //specify apihelper object
             val helper = ApiHelper(applicationContext)
             //create a JSON object of email and password
             val body = JSONObject()
-            body.put("email",email.text.toString())
+            body.put("phone",email.text.toString())
             body.put("password",password.text.toString())
             helper.post(api,body,object: ApiHelper.CallBack{
                 override fun onSuccess(result: JSONArray?) {
@@ -57,18 +58,18 @@ class SignInActivity : AppCompatActivity() {
                         //access token found,login success
                         //access token and member from the JSON return
                         val access_token = result.getString("access_token")
-                        val member = result.getString("member")
+                        val member = result.getString("user")
                         Toast.makeText(applicationContext, "Login Successful", Toast.LENGTH_SHORT).show()
                         //save access token to shared prefs
                         prefsHelper.savePrefs(applicationContext,"access_token",access_token)
 
 //                        convert member to an object
                         val memberObject = JSONObject(member)
-
+                        val member_id = memberObject.getString("user_id")
                         val memberemail = memberObject.getString("email")
                         val surname = memberObject.getString("surname")
                         //save member_id to shared prefs
-
+                        prefsHelper.savePrefs(applicationContext,"user_id",member_id)
                         prefsHelper.savePrefs(applicationContext,"email",memberemail)
 
                         prefsHelper.savePrefs(applicationContext,"surname",surname)

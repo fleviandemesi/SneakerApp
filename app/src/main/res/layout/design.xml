@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/cart"
+        android:src="@drawable/baseline_add_shopping_cart_24"
         android:id="@+id/image"
         android:layout_gravity="center"
        />

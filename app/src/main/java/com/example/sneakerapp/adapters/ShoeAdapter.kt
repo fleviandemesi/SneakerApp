@@ -2,91 +2,105 @@ package com.example.sneakerapp.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.example.sneakerapp.R
 import com.example.sneakerapp.SingleShoeActivity
-
 import com.example.sneakerapp.models.Shoe
-
-class  ShoeAdapter (var context: Context):
-    RecyclerView.Adapter<ShoeAdapter.ViewHolder>(){
-    // name of our class is LabAdapter
-    //Recycler view.adapter provided by android to work with recyclerview
-    // Lab adapter.viewHolder:: it means adapter will work with view holder class named view holder
-    // create a list and connect it with our model
-    var itemList: List<Shoe> = listOf()// its empty
-    //var item lists means the  value can be changed
-    // list of means there are no labs in the list initially
-    //create a class which will hold our views in single_lab.xml
-    //
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+import com.bumptech.glide.request.target.Target
 
 
-    //access single_lab.xml
+class ShoeAdapter(private val context: Context) : RecyclerView.Adapter<ShoeAdapter.ViewHolder>() {
+
+    private var itemList: List<Shoe> = listOf()
+    private var originalList: List<Shoe> = listOf()
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val photo: ImageView = itemView.findViewById(R.id.shoeimage) // Make sure this ID is correct in your layout
+        val name: TextView = itemView.findViewById(R.id.name)
+        val brand: TextView = itemView.findViewById(R.id.brand)
+        val price: TextView = itemView.findViewById(R.id.price)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        //access/inflate the single_item.xml
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.singleshoe ,parent, false)
-        //pass the single lab to view holder
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.singl, parent, false) // Ensure this XML layout exists
         return ViewHolder(view)
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // bind the data to viewss from the single_lab.xml
-        //fid your three textviews in single_item
-        val name = holder.itemView.findViewById<TextView>(R.id.name)
-        val brand = holder.itemView.findViewById<TextView>(R.id.brand)
-        val price =holder.itemView.findViewById<TextView>(R.id.price)
-
-        // assume one lab, and bind data, it will loop all other labs
         val shoe = itemList[position]
-        name.text = shoe.name
-        price.text = "KES " +  shoe.price
-        brand.text =shoe.brand
+        holder.name.text = shoe.name
+        holder.brand.text = shoe.brand
+        holder.price.text = "KES ${shoe.price}"
 
+        // Load the shoe photo using Glide
+        Glide.with(context)
+            .load(shoe.photo)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.shoe1) // Placeholder image while loading
+                    .error(R.drawable.shoe1) // Error image if loading fails
+            )
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                    Log.e("ShoeAdapter", "Error loading image", e)
+                    return false
+                }
 
-        //when one lab is clicked move to lab test activity
+                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    return false
+                }
+            })
+            .into(holder.photo)
 
-        holder.itemView.setOnClickListener{
-            // to navigate to each lab test on each shoe click
-            // we carry lab_id clicked with bundles(putextra)
-            //pass this id along with intent
-            val intent = Intent(context, SingleShoeActivity::class.java)
-            // we use key 1 to save it
-            intent.putExtra("shoe_id",shoe.shoe_id)
-//            intent.putExtra("category_id",shoe.category_id)
-            intent.putExtra("name",shoe.name)
-            intent.putExtra("price",shoe.price)
-            intent.putExtra("brand",shoe.brand)
+        Log.d("ShoeAdapter", "Loading image URL: ${shoe.photo}")
 
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, SingleShoeActivity::class.java).apply {
+                putExtra("shoe_id", shoe.shoe_id)
+                putExtra("category_id", shoe.category_id)
+                putExtra("name", shoe.name)
+                putExtra("price", shoe.price)
+                putExtra("description", shoe.description)
+                putExtra("brand", shoe.brand)
+                putExtra("photo",shoe.photo)
+                putExtra("quantity", shoe.quantity)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
             context.startActivity(intent)
-
-
         }
-
-
     }
-    //count the number of items
-    override fun getItemCount(): Int {
-        return itemList.size//count how many items in each list
-    }
-    //function filter data
-    fun filterList(filterlist:List<Shoe>){
-        itemList = filterlist
+
+    override fun getItemCount(): Int = itemList.size
+
+    fun filterList(filterList: List<Shoe>) {
+        itemList = filterList
         notifyDataSetChanged()
     }
 
-    //    Earlier we mention item list is empty
-//we will get data from our api, the bring it to the below function
-// the data you bring must follow the lab model
-    fun setListItems(data: List<Shoe>){
-        itemList = data // link our data with the item list
+    fun filterByCategory(categoryId: Int) {
+        itemList = if (categoryId == -1) {
+            originalList
+        } else {
+            originalList.filter { it.category_id.toInt() == categoryId }
+        }
         notifyDataSetChanged()
-        // tell us the adapter class that our item list is loaded with data
+    }
+
+    fun setListItems(data: List<Shoe>) {
+        originalList = data
+        itemList = data
+        notifyDataSetChanged()
     }
 }

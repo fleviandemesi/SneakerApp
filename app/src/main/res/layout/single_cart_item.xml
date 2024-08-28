@@ -1,87 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:material="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="10dp"
-    app:cardCornerRadius="8dp">
+    android:backgroundTint="@color/white"
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        android:layout_margin="8dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:padding="16dp">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/shoeimage"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:src="@drawable/shoe3"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginEnd="10dp"/>
-
-            <LinearLayout
-                android:id="@+id/linear1"
+            <!-- Item Image -->
+            <ImageView
+                android:id="@+id/item_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_toEndOf="@id/shoeimage"
-                android:layout_marginStart="10dp">
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/shoe4"
+                />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lipid Profile"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/brand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This is a nice Lab tests for keeping Fit, This is a nice test keeping Fit"
-                    android:textSize="12sp"
-                    android:maxLines="2"
-                    android:textColor="#787474"
-                    android:layout_marginTop="4dp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linear2"
+            <!-- Item Name -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:text="item_name_placeholder" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KES 1,200"
-                    android:textColor="#FF5722"
-                    android:textSize="15sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-        </RelativeLayout>
+            <!-- Item Brand -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/brand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/black"
+                android:text="item_brand_placeholder" />
 
-        <!-- Price TextView moved above the Remove button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Remove"
-            android:textSize="12sp"
-            android:layout_gravity="end"
-            android:layout_marginTop="10dp"/>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+            <!-- Item Price -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:textColor="#D61834"
+                android:text="item_price_placeholder" />
+
+            <!-- Remove Button -->
+            <Button
+                android:id="@+id/remove"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Remove"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/white"
+
+                android:backgroundTint="#E41029"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</ScrollView>
+
